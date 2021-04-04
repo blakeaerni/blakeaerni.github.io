@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>How much did no fans affect the 2020 MLS season? - Blake Aerni&#39;s Github Site</title>
+<meta property="og:title" content="How much did no fans affect the 2020 MLS season? - Blake Aerni&#39;s Github Site">
+
+
+  <link href='http://blakeaerni.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/blakeaerni">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">9 min read</span>
+    
+
+    <h1 class="article-title">How much did no fans affect the 2020 MLS season?</h1>
+
+    
+    <span class="article-date">2021-03-30</span>
+    
+
+    <div class="article-content">
+      
+<script src="http://blakeaerni.github.io/2021/03/30/how-much-did-no-fans-affect-the-2020-mls-season/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>Soccer fans around the world know how much the crowd can get in the head of an opposing player, put a team off their game, or just be supportive to the home team for 90 minutes. As far as we can remember, this has been the case, but in 2020, our reality changed.</p>
+<p>The 2020 MLS season played the majority of its games without fans, and even when there were fans it wasn’t very many. The season was odd, but it was played through to completion, and there was an eventual champion. The question is, how much does a lack of fans really affect the outcome on the field?</p>
+<p>This question sparked my interest, so I decided to take a deeper look.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.3     v purrr   0.3.4
+## v tibble  3.0.5     v dplyr   1.0.3
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggalt)</code></pre>
+<pre><code>## Warning: package &#39;ggalt&#39; was built under R version 4.0.4</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggalt&#39;:
+##   method                  from   
+##   grid.draw.absoluteGrob  ggplot2
+##   grobHeight.absoluteGrob ggplot2
+##   grobWidth.absoluteGrob  ggplot2
+##   grobX.absoluteGrob      ggplot2
+##   grobY.absoluteGrob      ggplot2</code></pre>
+<pre class="r"><code>library(ggbeeswarm)</code></pre>
+<pre><code>## Warning: package &#39;ggbeeswarm&#39; was built under R version 4.0.4</code></pre>
+<pre class="r"><code>library(ggrepel)</code></pre>
+<pre><code>## Warning: package &#39;ggrepel&#39; was built under R version 4.0.4</code></pre>
+<pre class="r"><code>MLS &lt;- read_csv(&quot;D:/School/SPMC 350/Blog/AllMLS.csv&quot;)</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   .default = col_double(),
+##   Squad = col_character(),
+##   COVID = col_character()
+## )
+## i Use `spec()` for the full column specifications.</code></pre>
+<p>I am working with data from the 2020 MLS season from FB Ref, a section of Sports Reference that has any soccer data needed. The specific data I am looking at has each team’s stats for the season, and I will focus on goals per game and points per game in both home and away matches. Along with that, I have data from the 10 years prior to the 2020 season to compare.</p>
+<p>The first thing that I want to do is make sure to have separate data sets for the 2020 season and the seasons prior.</p>
+<pre class="r"><code>MLS2020 &lt;- MLS %&gt;%
+  filter(Year&gt;2019)
+MLS15_19 &lt;- MLS %&gt;%
+  filter(Year&lt;2020, Year&gt;2014)
+MLS15to20 &lt;- MLS %&gt;%
+  filter(Year&gt;2014)</code></pre>
+<p>The first thing that comes to my mind when I think of fans affecting the game is goals. In theory, a game with no fans would give the home team less of an advantage, so they would score less goals. I want to put this to the test, so what I am going to do is take the average home goals per game in the past five seasons and compare that with the average home goals per game in the 2020 season.</p>
+<pre class="r"><code>MLS %&gt;%
+  filter(Year&gt;2014) %&gt;%
+  group_by(COVID) %&gt;%
+  summarise(Avg_Home_GPG = mean(HomeGPG),
+            Avg_Away_GPG = mean(AwayGPG))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   COVID   Avg_Home_GPG Avg_Away_GPG
+## * &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+## 1 Fans           0.896        0.585
+## 2 No Fans        0.824        0.612</code></pre>
+<p>So the games with fans from 2015 to 2019 averaged about .896 goals per game from the home team and about .585 goals per game from the away teams. In 2020 the number of home goals per game dropped, and away goals went up. Let’s visualize that.</p>
+<pre class="r"><code>ggplot() + 
+  geom_beeswarm(data=MLS2020, aes(x=&quot;2020 Home&quot;, y=HomeGPG), color=&quot;grey&quot;, size=2) +
+  geom_beeswarm(data=MLS2020, aes(x=&quot;2020 Away&quot;, y=AwayGPG), color=&quot;grey&quot;, size=2) +
+  geom_beeswarm(data=MLS15_19, aes(x=&quot;2015-19 Home&quot;, y=HomeGPG), color=&quot;grey&quot;, size=2) +
+  geom_beeswarm(data=MLS15_19, aes(x=&quot;2015-19 Away&quot;, y=AwayGPG), color=&quot;grey&quot;, size=2) +
+  geom_hline(yintercept=0.8963842, color=&quot;#df231a&quot;) +
+  geom_hline(yintercept=0.5852671, color=&quot;#df231a&quot;) +
+  geom_text(aes(x=1.47, y=.94, label=&quot;2015-19 Home Avg.&quot;), size=3 ) +
+  geom_text(aes(x=1.64, y=.63, label=&quot;2015-19 Away Avg.&quot;), size=3 ) +
+
+  labs(x=&quot;Season &amp; Location&quot;,
+       y=&quot;Goal per game&quot;,
+       title=&quot;Home teams struggle to score during a pandemic&quot;,
+       subtitle=&quot;On average, the home team in 2020 scored less than they had in the past five years...\nunless their name was LAFC&quot;,
+       caption=&quot;Source: FB Ref | By Blake Aerni&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size=10),
+    plot.caption = element_text(size=8) 
+    )</code></pre>
+<p><img src="http://blakeaerni.github.io/2021/03/30/how-much-did-no-fans-affect-the-2020-mls-season/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>With each dot representing a team, the 2020 season not only saw a shift, but it also was much more spread out than any other year. In 2020 there were home teams that scored less goals than any of the five years prior, and some scored substantially more.However, right now I am just going off an eye test, but the best way to know if the 2020 season was an anomaly is by testing the numbers.</p>
+<p>I want to run a significance test to see if the number of goals scored by home teams is statistically significant in being lower than the average. To do that I will run what is called a t test and it will tell me if that is the case. What I am plugging in is asking how much home goals per game is affected by fans being in the stands.</p>
+<pre class="r"><code>t.test(HomeGPG ~ COVID, data=MLS15to20)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  HomeGPG by COVID
+## t = 1.1027, df = 29.543, p-value = 0.2791
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.0620872  0.2076116
+## sample estimates:
+##    mean in group Fans mean in group No Fans 
+##             0.8963842             0.8236220</code></pre>
+<p>The most important information in this test is the p-value. If that value is less than .05 it means we have the go ahead to say that what I found is statistically significant. However, here it is not. In fact, it’s really not even close.</p>
+<p>What this means is that you cannot confidently say that the lack of fans was the clear cause for the home goals per game to drop.</p>
+<p>However, I feel like that is too high, and there is no way that fans have that little of an impact. To test this further, I am going to get rid of the clear outlier here. LAFC had a fantastic season at home in 2020, and they averaged more goals per game at home than any team in the past five years by far. What I want to do is test the average without LAFC and see if that is statistically significant. If it is, I would be able to say that fans likely have an impact on home goals per game.</p>
+<pre class="r"><code>MLS15to20NoLAFC &lt;- MLS15to20 %&gt;%
+  filter(HomeGPG&lt;1.5)
+t.test(HomeGPG ~ COVID, data=MLS15to20NoLAFC)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  HomeGPG by COVID
+## t = 1.9803, df = 30.376, p-value = 0.05679
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.003404445  0.224857288
+## sample estimates:
+##    mean in group Fans mean in group No Fans 
+##             0.8963842             0.7856578</code></pre>
+<p>Huh. Still not statistically significant. Even if you take out the team that is pulling the average way up, you get closer, but still not close enough. If this is the case, I think we can say that it is notable that 2020 saw a drop in home goals per game compared to the last five years, but that number isn’t out of the realm of possibility for a normal season with fans. I’ll have to move on to the next metric and see if that will change the narrative.</p>
+<p>What I want to look at next is how did the 2020 season compare to the 10 years prior in terms of the amount of points picked up by the home team in an average game. This lollipop chart here shows the 2020 season and the 10 previous seasons with home points per game as the length of each line</p>
+<pre class="r"><code>HomePPG2020 &lt;- MLS %&gt;%
+  select(Squad, Year, `HomePts/G`) %&gt;%
+  group_by(Year) %&gt;%
+  summarise(AvgHPPG = mean(`HomePts/G`)) %&gt;%
+  filter(Year&gt;2019)
+HomeGPG15_19 &lt;- MLS %&gt;%
+  select(Squad, Year, `HomePts/G`) %&gt;%
+  group_by(Year) %&gt;%
+  summarise(AvgHPPG = mean(`HomePts/G`))
+ggplot() + 
+  geom_lollipop(
+    data=HomeGPG15_19, 
+    aes(y=reorder(Year, AvgHPPG), x=AvgHPPG), 
+    horizontal = TRUE,
+    color=&quot;#001f5b&quot;,
+    size=1.25
+    ) +
+  geom_lollipop(
+    data=HomePPG2020, 
+    aes(y=reorder(Year, AvgHPPG), x=AvgHPPG), 
+    horizontal = TRUE,
+    color=&quot;#df231a&quot;,
+    size=1.25
+    ) +
+  labs(x=&quot;Average points per game earned by home team&quot;, y=&quot;&quot;, title=&quot;Fans may not change as much as we thought...&quot;, subtitle=&quot;The 2020 season didn&#39;t take last place for average points earned at home since 2010&quot;, caption=&quot;Source: FB Ref | By Blake Aerni&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size=11), 
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(size=8)
+    ) </code></pre>
+<p><img src="http://blakeaerni.github.io/2021/03/30/how-much-did-no-fans-affect-the-2020-mls-season/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>In 2011 there were less points earned on average by the home team than in 2020. Last time I checked there wasn’t a global pandemic in 2011 that forced fans out of the stadiums…</p>
+<p>So as I get further into this, the more I am starting to realize that the 2020 season may not have been such an uncharacteristic season after all. If this is the case, then that means that some teams had to have had a better year in 2020 than in previous years</p>
+<p>To see that, I am going to take a look at how teams performed on the road in 2020 compared to 2019. For this, I will have to make a new data frame that is just the 2019 and 2020 season stats. I will also have to drop both Nashville and Miami since they don’t have any 2019 stats to compare to.</p>
+<pre class="r"><code>MLS19_20 &lt;- MLS %&gt;%
+  filter(Year&gt;2018)
+MLS19_20wide &lt;- MLS19_20 %&gt;%
+  select(Squad, Year, `AwayPts/G`) %&gt;%
+  pivot_wider(names_from = Year, values_from = `AwayPts/G`) %&gt;%
+  filter(`2019`&gt;0)</code></pre>
+<p>This dumbbell chart here shows each team’s average points earned in an away game. The dark blue dot is that team’s average in 2019 and the red dot is each average in 2020.</p>
+<pre class="r"><code>ggplot() + 
+  geom_dumbbell(
+    data=MLS19_20wide, 
+    aes(y=reorder(Squad, `2019`), x=`2019`, xend=`2020`),
+    size = 1,
+    color = &quot;grey&quot;,
+    colour_x = &quot;#001f5b&quot;,
+    colour_xend = &quot;#df231a&quot;) + 
+  theme_minimal() +
+  labs(x=&quot;Average points per game earned on the road&quot;,
+       y=&quot;Team&quot;, title=&quot;No fans can make away games harder?&quot;,
+       subtitle=&quot;With no fans in 2020, some teams were much better on the road and other were substantially worse&quot;,
+       caption=&quot;Source: FB Ref | By Blake Aerni&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(size=8)
+    )</code></pre>
+<p><img src="http://blakeaerni.github.io/2021/03/30/how-much-did-no-fans-affect-the-2020-mls-season/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Some teams like LAFC were much worse in 2020 than they were in 2019, but on the other hand, teams like Sporting KC were so much better than they were on the road in 2019. In theory, 2020 would be easier on the road for most teams because you aren’t going to be hassled by the fans, but that isn’t the case for everyone.</p>
+<p>When looking back at the 2020 season years down the line, people will likely still assume that home teams had less of an advantage and away teams were better. However, the data disagrees. Home teams still had an advantage, and not every team was better on the road.</p>
+<p>Does this mean fans have absolutely no affect on the game? I wouldn’t go that far either. It likely falls somewhere in the middle. Fans do give their team a boost, and help them win some games, but when they are removed, the home team still performs better. It makes you think, maybe home field advantage has more to do with the comfort of your own stadium and no travel than it does the fans in the stadium.</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
