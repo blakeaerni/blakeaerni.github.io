@@ -77,14 +77,14 @@
 
 
 <p>Soccer fans around the world know how much the crowd can get in the head of an opposing player, put a team off their game or just be supportive to the home team for 90 minutes. As far as we can remember this has been the case, but in 2020 our reality changed.</p>
-<p>The 2020 MLS season played the majority of its games without fans, and even when fans were in attendance, they were few and far between. The season was odd, but it was played through to completion and there was an eventual champion. The question is, how much does a lack of fans really affect the outcome on the field?</p>
+<p>The 2020 MLS season played the majority of its games without fans, and even when fans were in attendance, they were few and far between. The season was odd, but it was played through to completion and there was an eventual champion. The question is, how much does a lack of fans really impact the outcome on the field?</p>
 <pre class="r"><code>library(tidyverse)
 library(ggalt)
 library(ggbeeswarm)
 library(ggrepel)
 
 MLS &lt;- read_csv(&quot;D:/School/SPMC 350/Blog/AllMLS.csv&quot;)</code></pre>
-<p>I am working with data from the 2020 MLS season from FB Ref, a section of Sports Reference that has any soccer data needed. The specific data I am looking at has each team’s stats for the season, and I will focus on goals per game and points per game in both home and away matches. Along with that, I have data from the 10 years prior to the 2020 season to compare.</p>
+<p>I am working with data from the 2020 MLS season from FB Ref, a section of Sports Reference that has all kinds of soccer data. The specific data I am looking at has each MLS team’s stats for the season, and I will focus on goals per game and points per game in both home and away matches. Along with that, I have data from the 10 years prior to the 2020 season to compare.</p>
 <p>The first thing that I want to do is make sure to have separate data sets for the 2020 season and the seasons prior.</p>
 <pre class="r"><code>MLS2020 &lt;- MLS %&gt;%
   filter(Year&gt;2019)
@@ -92,7 +92,7 @@ MLS15_19 &lt;- MLS %&gt;%
   filter(Year&lt;2020, Year&gt;2014)
 MLS15to20 &lt;- MLS %&gt;%
   filter(Year&gt;2014)</code></pre>
-<p>The first thing that comes to my mind when I think of fans affecting the game is goals. In theory, a game with no fans would give the home team less of an advantage, so they would score less goals. I want to put this to the test, so what I am going to do is take the average home goals per game in the past five seasons and compare that with the average home goals per game in the 2020 season.</p>
+<p>The first thing that comes to my mind when I think of fans impacting the game is goals. In theory, a game with no fans would give the home team less of an advantage, so they would score less goals. I want to put this to the test, so what I am going to do is take the average home goals per game in the past five seasons and compare that with the average home goals per game in the 2020 season.</p>
 <pre class="r"><code>MLS %&gt;%
   filter(Year&gt;2014) %&gt;%
   group_by(COVID) %&gt;%
@@ -128,7 +128,7 @@ MLS15to20 &lt;- MLS %&gt;%
     )</code></pre>
 <p><img src="http://blakeaerni.github.io/2021/03/30/how-much-did-no-fans-affect-the-2020-mls-season/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>With each dot representing a team, the 2020 season not only saw a shift, but it also was much more spread out than any other year. In 2020 there were home teams that scored less goals than any of the five years prior, and some scored substantially more. However, right now I am just going off an eye test. The best way to know if the 2020 season was an anomaly is by testing the numbers.</p>
-<p>I am going to run a significance test to see if the number of goals scored by home teams is statistically significant in being lower than the average. To do that I will run what is called a t-test and it will tell me if that is the case. What I am plugging in is asking how much home goals per game is affected by fans being in the stands.</p>
+<p>I am going to run a significance test to see if the number of goals scored by home teams is statistically significant in being lower than the average. To do that I will run what is called a t-test and it will tell me if that is the case. What I am plugging in is asking how much home goals per game is impacted by fans being in the stands.</p>
 <pre class="r"><code>t.test(HomeGPG ~ COVID, data=MLS15to20)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
