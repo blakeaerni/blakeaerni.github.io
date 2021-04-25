@@ -83,7 +83,7 @@ library(gt)
 
 TotalPLTable &lt;- read_csv(&quot;TotalPLTable.csv&quot;)
 PLSeasons &lt;- read_csv(&quot;PLSeasons.csv&quot;)</code></pre>
-<p>I’m working with the data from each season of the Premier League dating back to the beginning of the “Premier League Era”. The 1992-93 season is when English football decided to change the name of the top flight to the Premier League, and since then it has grown a worldwide following.</p>
+<p>I’m working with the data from each Premier League season dating back to the beginning of the “Premier League Era”. The 1992-93 season is when English football decided to change the name of the top flight to the Premier League, and since then it has grown a worldwide following. I also will not include the 2020-21 season since it isn’t quite over yet.</p>
 <pre class="r"><code>CumulatePLTable &lt;- PLSeasons %&gt;% 
   group_by(Squad) %&gt;%
   summarise(Seasons = n(),
@@ -129,7 +129,7 @@ geom_text(aes(x=2018.5, y=1450, label=&quot;Tottenham&quot;), color=&quot;#0e9ca
 <p><img src="http://blakeaerni.github.io/2021/04/19/what-color-is-london-in-the-premier-league-era/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>Arsenal takes the top spot with 2,011 points earned in the first 28 seasons of the Premier League, but Chelsea are on their tail with 1,997. Tottenham are sitting on 1,654 points, but they have still separated themselves from the pack. In dark grey are the other London clubs, but none of them are making a push for the top spot.</p>
 <p>No surprise to any English football fan that those three teams are taking the top spots, but now we know that it is likely going to be one of these teams that is deemed “the best in London.”</p>
-<p>It’s interesting as you look closer at this and see that there is a time around 1996 that Arsenal begin separating themselves from Chelsea. This was when the Gunners brought Arsene Wenger as their manager, and any fan knows how he will go down as a club legend. However, in more recent years, Wenger started to struggle and Chelsea found success with different managers.</p>
+<p>It’s interesting as you look closer at this and see that there is a time around 1996 that Arsenal begin separating themselves from Chelsea. This was when the Gunners brought in Arsene Wenger as their manager, and any fan knows how he will go down as a club legend. However, in more recent years Wenger started to struggle and Arsenal parted ways with him, but Chelsea have found success with different managers.</p>
 <pre class="r"><code>CHE &lt;- PLSeasons %&gt;%
   filter(Squad == &quot;Chelsea&quot;)
 TOT &lt;- PLSeasons %&gt;%
@@ -176,7 +176,7 @@ LDNTableLong &lt;- LDNTable %&gt;%
     names_to = &quot;Trophy&quot;,
     values_to = &quot;Count&quot;)</code></pre>
 <p>The next thing to look at is one of the most important benchmarks of a successful team, winning trophies. Every team that is known as one of the best has won trophies, and teams will always be criticized if they aren’t winning enough trophies.</p>
-<p>The unique thing about trophies in English football is that there are five different competitions going on during a season that English teams compete in. The Premier League, the FA Cup and the League Cup are all domestic competitions that all three of these teams compete in every year. On a bigger stage is the UEFA Champions League and the UEFA Europa League. These competitions are between all clubs in Europe, and an English team can only qualify for one of these competitions a season.</p>
+<p>The unique thing about trophies in English football is that there are five different competitions going on during a season that English teams compete in. The Premier League, the FA Cup and the League Cup are all domestic competitions that all three of these teams compete in every year. On a bigger stage is the UEFA Champions League and the UEFA Europa League. These competitions are between all clubs in Europe, and an English team can only qualify for one of these competitions in a season.</p>
 <p>The Champions League is the biggest competition in Europe, and the Premier League is the biggest competition in England, so teams focus on those first. Now I want to see how these teams stack up with trophies</p>
 <pre class="r"><code>ggplot(LDNTableLong, aes(x=reorder(Squad, Count), weight=Count, fill=Trophy)) + 
   scale_fill_manual(values = c(&quot;#b36704&quot;,&quot;#ffa838&quot;, &quot;#d4000d&quot;, &quot;#002e95&quot;, &quot;#467fff&quot;)) +
@@ -210,7 +210,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   select(Squad, TotalPts, Trophies, SuccessLevel) %&gt;%
   arrange(desc(SuccessLevel)) %&gt;%
   ungroup()</code></pre>
-<p>While all of this is just speculation, I want to put a number value on all of the things that I have viewed. First, for points, I want to give each team their average number of points earned each season. On top of that, I will take their average position in the table over the era and subtract it from 20, as there are 20 clubs in the league. Next I take all of the trophies won and multiply them by a value depending on their merit. The Champions League is worth five, the Premier League is four, Europa League is three, FA cup is two, and the League Cup is one.</p>
+<p>While all of this is just speculation, I want to put a number value on all of the things that I have viewed. First, for points, I want to give each team their average number of points earned each season. On top of that, I will take their average position in the table over the era and subtract it from 20, as there are 20 clubs in the league. Next I’ll take all of the trophies won and multiply them by a value depending on their merit. The Champions League is worth five, the Premier League is four, Europa League is three, FA cup is two, and the League Cup is one.</p>
 <p>With this information I’m able to make a chart and see, based off the values I have given each achievement, who are the best London clubs.</p>
 <pre class="r"><code>LDNSuccess %&gt;%
   gt() %&gt;%
@@ -246,7 +246,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#lecsdogeou .gt_table {
+#xzgtlheluq .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -271,7 +271,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-left-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_heading {
+#xzgtlheluq .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -283,7 +283,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_title {
+#xzgtlheluq .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -293,7 +293,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-bottom-width: 0;
 }
 
-#lecsdogeou .gt_subtitle {
+#xzgtlheluq .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -303,13 +303,13 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-top-width: 0;
 }
 
-#lecsdogeou .gt_bottom_border {
+#xzgtlheluq .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_col_headings {
+#xzgtlheluq .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -324,7 +324,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_col_heading {
+#xzgtlheluq .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -344,7 +344,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   overflow-x: hidden;
 }
 
-#lecsdogeou .gt_column_spanner_outer {
+#xzgtlheluq .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -356,15 +356,15 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   padding-right: 4px;
 }
 
-#lecsdogeou .gt_column_spanner_outer:first-child {
+#xzgtlheluq .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lecsdogeou .gt_column_spanner_outer:last-child {
+#xzgtlheluq .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lecsdogeou .gt_column_spanner {
+#xzgtlheluq .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -376,7 +376,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   width: 100%;
 }
 
-#lecsdogeou .gt_group_heading {
+#xzgtlheluq .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -398,7 +398,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   vertical-align: middle;
 }
 
-#lecsdogeou .gt_empty_group_heading {
+#xzgtlheluq .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -413,15 +413,15 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   vertical-align: middle;
 }
 
-#lecsdogeou .gt_from_md > :first-child {
+#xzgtlheluq .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lecsdogeou .gt_from_md > :last-child {
+#xzgtlheluq .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lecsdogeou .gt_row {
+#xzgtlheluq .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -440,7 +440,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   overflow-x: hidden;
 }
 
-#lecsdogeou .gt_stub {
+#xzgtlheluq .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -452,7 +452,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   padding-left: 12px;
 }
 
-#lecsdogeou .gt_summary_row {
+#xzgtlheluq .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -462,7 +462,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   padding-right: 5px;
 }
 
-#lecsdogeou .gt_first_summary_row {
+#xzgtlheluq .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -472,7 +472,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-top-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_grand_summary_row {
+#xzgtlheluq .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -482,7 +482,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   padding-right: 5px;
 }
 
-#lecsdogeou .gt_first_grand_summary_row {
+#xzgtlheluq .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -492,11 +492,11 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-top-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_striped {
+#xzgtlheluq .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lecsdogeou .gt_table_body {
+#xzgtlheluq .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -505,7 +505,7 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_footnotes {
+#xzgtlheluq .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -519,13 +519,13 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_footnote {
+#xzgtlheluq .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#lecsdogeou .gt_sourcenotes {
+#xzgtlheluq .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -539,46 +539,46 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#lecsdogeou .gt_sourcenote {
+#xzgtlheluq .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#lecsdogeou .gt_left {
+#xzgtlheluq .gt_left {
   text-align: left;
 }
 
-#lecsdogeou .gt_center {
+#xzgtlheluq .gt_center {
   text-align: center;
 }
 
-#lecsdogeou .gt_right {
+#xzgtlheluq .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lecsdogeou .gt_font_normal {
+#xzgtlheluq .gt_font_normal {
   font-weight: normal;
 }
 
-#lecsdogeou .gt_font_bold {
+#xzgtlheluq .gt_font_bold {
   font-weight: bold;
 }
 
-#lecsdogeou .gt_font_italic {
+#xzgtlheluq .gt_font_italic {
   font-style: italic;
 }
 
-#lecsdogeou .gt_super {
+#xzgtlheluq .gt_super {
   font-size: 65%;
 }
 
-#lecsdogeou .gt_footnote_marks {
+#xzgtlheluq .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="lecsdogeou" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="xzgtlheluq" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   <thead class="gt_header">
     <tr>
       <th colspan="4" class="gt_heading gt_title gt_font_normal" style="color: black; text-align: left; font-weight: bold;">Trophies help Chelsea take the top spot</th>
@@ -658,8 +658,8 @@ LDNSuccess &lt;- LondonClubs %&gt;%
   </tfoot>
   
 </table></div>
-<p>Chelsea take the number one spot, and the Blues are deemed the best team in London.</p>
-<p>Now this isn’t 100% final and nobody can question it. I mean, I assigned rough number values to achievements that different people value would give different merit. Ultimately there is no single way to know for a fact who is the best club in London, but to me, this was the best way.</p>
+<p>Chelsea take the number one spot, and the Blues are deemed the best club in London.</p>
+<p>Now this isn’t an end-all be-all. I mean, I assigned rough number values to achievements that different people value would give different merit. Ultimately there is no single way to know for a fact who is the best club in London, but to me, this was the best way.</p>
 <p>It wasn’t only the fact that they were close on total points, but Chelsea have won at the highest stages in the Premier League era. I can comfortably say that the Blues are the best club in London now and if people want to disagree, then I will show them the numbers.</p>
 
     </div>
