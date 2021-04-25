@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>What color is London in the Premier League era? - Blake Aerni&#39;s Github Site</title>
+<meta property="og:title" content="What color is London in the Premier League era? - Blake Aerni&#39;s Github Site">
+
+
+  <link href='http://blakeaerni.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/blakeaerni">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">12 min read</span>
+    
+
+    <h1 class="article-title">What color is London in the Premier League era?</h1>
+
+    
+    <span class="article-date">2021-04-19</span>
+    
+
+    <div class="article-content">
+      
+<script src="http://blakeaerni.github.io/2021/04/19/what-color-is-london-in-the-premier-league-era/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>If you know almost anything about English football, you know that clubs that play in the same city have deep hatred for each other. The rivalries in London are a perfect example of that. The fans of these clubs love to make the claim that “London is (insert color of club)” when their club is having success. While the color of London seems to change every month or even every week in the eyes of the fans, I want to take a look at what color London would be if we looked at the entire Premier League era.</p>
+<pre class="r"><code>library(tidyverse)
+library(ggbump)
+library(gt)
+
+TotalPLTable &lt;- read_csv(&quot;TotalPLTable.csv&quot;)
+PLSeasons &lt;- read_csv(&quot;PLSeasons.csv&quot;)</code></pre>
+<p>I’m working with the data from each season of the Premier League dating back to the beginning of the “Premier League Era”. The 1992-93 season is when English football decided to change the name of the top flight to the Premier League, and since then it has grown a worldwide following.</p>
+<pre class="r"><code>CumulatePLTable &lt;- PLSeasons %&gt;% 
+  group_by(Squad) %&gt;%
+  summarise(Seasons = n(),
+            MPcumulative=cumsum(MP),
+            Wcumulative=cumsum(W),
+            Dcumulative=cumsum(D),
+            Lcumulative=cumsum(L),
+            GFcumulative=cumsum(GF),
+            GAcumulative=cumsum(GA),
+            GDcumulative=cumsum(GD),
+            PTScumulative=cumsum(Pts),
+            StartYear=StartYear)
+LDNCumulativeTable &lt;- CumulatePLTable %&gt;%
+  filter(Squad %in% c(&quot;Arsenal&quot;, &quot;Chelsea&quot;, &quot;Tottenham&quot;, &quot;Crystal Palace&quot;, &quot;West Ham&quot;, &quot;Fulham&quot;, &quot;QPR&quot;, &quot;Charlton Ath&quot;, &quot;Wimbledon&quot;))
+ArsenalPTS &lt;- CumulatePLTable %&gt;%
+  filter(Squad == &quot;Arsenal&quot;)
+ChelseaPTS &lt;- CumulatePLTable %&gt;%
+  filter(Squad == &quot;Chelsea&quot;)
+TottenhamPTS &lt;- CumulatePLTable %&gt;%
+  filter(Squad == &quot;Tottenham&quot;)</code></pre>
+<p>The easiest way to compare all of the clubs in London is by comparing their total points earned. Simple as three points for a win, one for a draw and none for a loss. The teams that rise to the top of the table each year are the teams that earn the most points.</p>
+<p>If you want to be the best, you have to earn the most points, so I want to see who has earned the most points over their time in the Premier League.</p>
+<pre class="r"><code>ggplot() + 
+  geom_line(data=CumulatePLTable, aes(x=StartYear, y=PTScumulative, group=Squad), color= &quot;#E1E1E1&quot;) +
+  geom_line(data=LDNCumulativeTable, aes(x=StartYear, y=PTScumulative, group=Squad), color=&quot;#8D8D8D&quot;) +
+  geom_line(data=ArsenalPTS, aes(x=StartYear, y=PTScumulative, group=Squad), color=&quot;#DB0007&quot;) + 
+  geom_line(data=ChelseaPTS, aes(x=StartYear, y=PTScumulative, group=Squad), color=&quot;#034694&quot;) + 
+  geom_line(data=TottenhamPTS, aes(x=StartYear, y=PTScumulative, group=Squad), color=&quot;#0e9ca5&quot;) + 
+  labs(x=&quot;Seasons&quot;,
+       y=&quot;Total Points&quot;,
+       title=&quot;Arsenal comes out on top, but not by much&quot;,
+       subtitle=&quot;The top three London sides seperate themselves and it&#39;s close at the top.&quot;,
+       caption=&quot;Source: FB Ref | By Blake Aerni&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()) +
+geom_text(aes(x=2018.5, y=2100, label=&quot;Arsenal&quot;), color=&quot;#DB0007&quot;, size=3.5) +
+geom_text(aes(x=2018.75, y=1850, label=&quot;Chelsea&quot;), color=&quot;#034694&quot;, size=3.5) +
+geom_text(aes(x=2018.5, y=1450, label=&quot;Tottenham&quot;), color=&quot;#0e9ca5&quot;, size=3.5)</code></pre>
+<p><img src="http://blakeaerni.github.io/2021/04/19/what-color-is-london-in-the-premier-league-era/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Arsenal takes the top spot with 2,011 points earned in the first 28 seasons of the Premier League, but Chelsea are on their tail with 1,997. Tottenham are sitting on 1,654 points, but they have still separated themselves from the pack. In dark grey are the other London clubs, but none of them are making a push for the top spot.</p>
+<p>No surprise to any English football fan that those three teams are taking the top spots, but now we know that it is likely going to be one of these teams that is deemed “the best in London.”</p>
+<p>It’s interesting as you look closer at this and see that there is a time around 1996 that Arsenal begin separating themselves from Chelsea. This was when the Gunners brought Arsene Wenger as their manager, and any fan knows how he will go down as a club legend. However, in more recent years, Wenger started to struggle and Chelsea found success with different managers.</p>
+<pre class="r"><code>CHE &lt;- PLSeasons %&gt;%
+  filter(Squad == &quot;Chelsea&quot;)
+TOT &lt;- PLSeasons %&gt;%
+  filter(Squad == &quot;Tottenham&quot;)
+ARE &lt;- PLSeasons %&gt;%
+  filter(Squad == &quot;Arsenal&quot;)
+Big3Seasons &lt;- bind_rows(CHE, TOT, ARE)</code></pre>
+<p>Total points earned is a great start, but that is not the only determinant of success. The entirety of each season, a team is fighting to finish in the best place they can to either win the league, or qualify to play in European competition.</p>
+<p>I want to look at where each team lands when it comes to the Premier League table. The best teams always find themselves near the top, so let’s see where each of these teams falls in the past 28 seasons. For now, we can narrow it down to just the top three teams since they have seperated themselves from the pack.</p>
+<pre class="r"><code>ggplot() + geom_bump(data=Big3Seasons, aes(x=StartYear, y=Rk, color=Squad), size=1) + 
+  geom_point(data=Big3Seasons, aes(x=StartYear, y=Rk, color=Squad), size = 3) +
+  geom_text(data = Big3Seasons %&gt;% 
+  filter(StartYear == min(StartYear)), aes(x = StartYear - .2, y=Rk, label = c(&quot;CHE&quot;, &quot;TOT&quot;, &quot;ARS&quot;)), size = 3, hjust = 1) +
+  geom_text(data = Big3Seasons %&gt;%
+  filter(StartYear == max(StartYear)), aes(x = StartYear + .2, y=Rk, label = c(&quot;CHE&quot;, &quot;TOT&quot;, &quot;ARS&quot;)), size = 3, hjust = 0) +
+  labs(x=&quot;Season&quot;,
+       y=&quot;Position in the table&quot;,
+       title=&quot;Chelsea is the new kid on the block&quot;,
+       subtitle=&quot;Arsenal finished higher in the late 90&#39;s and early 2000&#39;s but in most of the last 16 years,\nChelsea have been better&quot;,
+       caption=&quot;Source: FB Ref | By Blake Aerni&quot;) + 
+  theme_minimal() +
+  theme(
+    legend.position = &quot;none&quot;,
+    panel.grid.major = element_blank(),
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10)) + 
+    scale_color_manual(values = c(&quot;#DB0007&quot;, &quot;#034694&quot;, &quot;#0e9ca5&quot;)) +
+  scale_y_reverse(breaks=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15))</code></pre>
+<p><img src="http://blakeaerni.github.io/2021/04/19/what-color-is-london-in-the-premier-league-era/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Tottenham started out the era on top in two of the first three years, but after that it was downhill. Once again, you notice that the time when Wenger came in was after an awful season from Arsenal, but he brought them to glory.</p>
+<p>When you look at this closer, you see the Arsenal dominance from 1997 until about 2004. In those years Arsenal had some incredible teams including “The Invincibles.” Following that, Chelsea started to take over as their young talent grew to become the leaders of their club.</p>
+<p>Along with this, you continue to notice that in the Premier League era, it is pretty much a two horse race for who is the best team in London.</p>
+<pre class="r"><code>TFC &lt;- TotalPLTable %&gt;%
+  filter(Squad == &quot;Tottenham&quot;)
+AFC &lt;- TotalPLTable %&gt;%
+  filter(Squad == &quot;Arsenal&quot;)
+CFC &lt;- TotalPLTable %&gt;%
+  filter(Squad == &quot;Chelsea&quot;)
+LDNTable &lt;- bind_rows(TFC, CFC, AFC)
+LDNTableLong &lt;- LDNTable %&gt;%
+  pivot_longer(
+    cols = c(&quot;PremierLeague&quot;, &quot;ChampionsLeauge&quot;, &quot;EuropaLeague&quot;, &quot;FACup&quot;, &quot;LeagueCup&quot;),
+    names_to = &quot;Trophy&quot;,
+    values_to = &quot;Count&quot;)</code></pre>
+<p>The next thing to look at is one of the most important benchmarks of a successful team, winning trophies. Every team that is known as one of the best has won trophies, and teams will always be criticized if they aren’t winning enough trophies.</p>
+<p>The unique thing about trophies in English football is that there are five different competitions going on during a season that English teams compete in. The Premier League, the FA Cup and the League Cup are all domestic competitions that all three of these teams compete in every year. On a bigger stage is the UEFA Champions League and the UEFA Europa League. These competitions are between all clubs in Europe, and an English team can only qualify for one of these competitions a season.</p>
+<p>The Champions League is the biggest competition in Europe, and the Premier League is the biggest competition in England, so teams focus on those first. Now I want to see how these teams stack up with trophies</p>
+<pre class="r"><code>ggplot(LDNTableLong, aes(x=reorder(Squad, Count), weight=Count, fill=Trophy)) + 
+  scale_fill_manual(values = c(&quot;#b36704&quot;,&quot;#ffa838&quot;, &quot;#d4000d&quot;, &quot;#002e95&quot;, &quot;#467fff&quot;)) +
+  geom_bar() + 
+  coord_flip() +
+  labs(x=&quot;Club&quot;,
+       y=&quot;Total Trophies&quot;,
+       title=&quot;Chelsea have the biggest trophy case&quot;,
+       subtitle=&quot;The Blues have the most domestic trophies and are the only London club to have won in Europe&quot;,
+       caption=&quot;Source: FB Ref | By Blake Aerni&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank())</code></pre>
+<p><img src="http://blakeaerni.github.io/2021/04/19/what-color-is-london-in-the-premier-league-era/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>This is where Chelsea make their case for being the best team in London over the past 28 seasons. Although they have not picked up as many points in the league, they have more trophies than the other two clubs combined. On top of that, they are the only London club to have won any European competition, and they won the Champions League once along with the Europa League twice.</p>
+<pre class="r"><code>Rank &lt;- PLSeasons %&gt;% group_by(Squad) %&gt;%
+  summarise(AvgRank=mean(Rk))
+TotalPLTableNew &lt;- bind_cols(Rank, TotalPLTable) %&gt;%
+  select(!Squad...1) %&gt;%
+  rename(Squad=Squad...3)
+Success &lt;- TotalPLTableNew %&gt;%
+  mutate(SuccessLevel = (TotalPts/28) + ((20-AvgRank)*4) + (PremierLeague*4) + (ChampionsLeauge*5) + (EuropaLeague*3) + (FACup*2) + LeagueCup)
+LondonClubs &lt;- Success %&gt;%
+  filter(Squad %in% c(&quot;Arsenal&quot;, &quot;Chelsea&quot;, &quot;Tottenham&quot;, &quot;Crystal Palace&quot;, &quot;West Ham&quot;, &quot;Fulham&quot;, &quot;QPR&quot;, &quot;Charlton Ath&quot;, &quot;Wimbledon&quot;))
+LDNSuccess &lt;- LondonClubs %&gt;%
+  group_by(Squad) %&gt;%
+  mutate(Trophies= PremierLeague + ChampionsLeauge + EuropaLeague + FACup + LeagueCup) %&gt;%
+  select(Squad, TotalPts, Trophies, SuccessLevel) %&gt;%
+  arrange(desc(SuccessLevel)) %&gt;%
+  ungroup()</code></pre>
+<p>While all of this is just speculation, I want to put a number value on all of the things that I have viewed. First, for points, I want to give each team their average number of points earned each season. On top of that, I will take their average position in the table over the era and subtract it from 20, as there are 20 clubs in the league. Next I take all of the trophies won and multiply them by a value depending on their merit. The Champions League is worth five, the Premier League is four, Europa League is three, FA cup is two, and the League Cup is one.</p>
+<p>With this information I’m able to make a chart and see, based off the values I have given each achievement, who are the best London clubs.</p>
+<pre class="r"><code>LDNSuccess %&gt;%
+  gt() %&gt;%
+  tab_header(
+    title = &quot;Trophies help Chelsea take the top spot&quot;,
+    subtitle = &quot;Although Arsenal do have slighlty more points in the era, Chelsea are able to take first with six more trophies.&quot;) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;title&quot;)) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;subtitle&quot;)) %&gt;%
+  tab_source_note(
+    source_note = &quot;Source: FB Ref | By Blake Aerni&quot;) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;),
+    locations = cells_body(columns = vars(Squad))) %&gt;%
+  tab_style(
+    style = cell_fill(color = &quot;#0e9ca5&quot;),
+    locations = cells_body(rows = SuccessLevel &gt; 100)) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;white&quot;),
+    locations = cells_body(rows = SuccessLevel &gt; 110)) %&gt;%
+    tab_style(
+    style = cell_fill(color = &quot;#DB0007&quot;),
+    locations = cells_body(rows = SuccessLevel &gt; 160)) %&gt;%
+  tab_style(
+    style = cell_fill(color = &quot;#034694&quot;),
+    locations = cells_body(rows = SuccessLevel &gt; 180)) %&gt;%
+  opt_row_striping() </code></pre>
+<pre><code>## Warning: The `.dots` argument of `group_by()` is deprecated as of dplyr 1.0.0.</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#lecsdogeou .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lecsdogeou .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lecsdogeou .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lecsdogeou .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lecsdogeou .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lecsdogeou .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lecsdogeou .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lecsdogeou .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lecsdogeou .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lecsdogeou .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lecsdogeou .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lecsdogeou .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lecsdogeou .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#lecsdogeou .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lecsdogeou .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lecsdogeou .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lecsdogeou .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#lecsdogeou .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lecsdogeou .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#lecsdogeou .gt_left {
+  text-align: left;
+}
+
+#lecsdogeou .gt_center {
+  text-align: center;
+}
+
+#lecsdogeou .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lecsdogeou .gt_font_normal {
+  font-weight: normal;
+}
+
+#lecsdogeou .gt_font_bold {
+  font-weight: bold;
+}
+
+#lecsdogeou .gt_font_italic {
+  font-style: italic;
+}
+
+#lecsdogeou .gt_super {
+  font-size: 65%;
+}
+
+#lecsdogeou .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="lecsdogeou" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="4" class="gt_heading gt_title gt_font_normal" style="color: black; text-align: left; font-weight: bold;">Trophies help Chelsea take the top spot</th>
+    </tr>
+    <tr>
+      <th colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="color: black; text-align: left;">Although Arsenal do have slighlty more points in the era, Chelsea are able to take first with six more trophies.</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Squad</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">TotalPts</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Trophies</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">SuccessLevel</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="color: white; font-weight: bold; background-color: #034694;">Chelsea</td>
+      <td class="gt_row gt_right" style="background-color: #034694; color: white;">1997</td>
+      <td class="gt_row gt_right" style="background-color: #034694; color: white;">19</td>
+      <td class="gt_row gt_right" style="background-color: #034694; color: white;">181.60714</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped" style="color: white; font-weight: bold; background-color: #DB0007;">Arsenal</td>
+      <td class="gt_row gt_right gt_striped" style="background-color: #DB0007; color: white;">2011</td>
+      <td class="gt_row gt_right gt_striped" style="background-color: #DB0007; color: white;">13</td>
+      <td class="gt_row gt_right gt_striped" style="background-color: #DB0007; color: white;">167.25000</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: white; font-weight: bold; background-color: #0E9CA5;">Tottenham</td>
+      <td class="gt_row gt_right" style="background-color: #0E9CA5; color: white;">1654</td>
+      <td class="gt_row gt_right" style="background-color: #0E9CA5; color: white;">2</td>
+      <td class="gt_row gt_right" style="background-color: #0E9CA5; color: white;">110.64286</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped" style="color: black; font-weight: bold;">West Ham</td>
+      <td class="gt_row gt_right gt_striped">1137</td>
+      <td class="gt_row gt_right gt_striped">0</td>
+      <td class="gt_row gt_right gt_striped">73.10714</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Fulham</td>
+      <td class="gt_row gt_right">612</td>
+      <td class="gt_row gt_right">0</td>
+      <td class="gt_row gt_right">50.42857</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped" style="color: black; font-weight: bold;">Wimbledon</td>
+      <td class="gt_row gt_right gt_striped">391</td>
+      <td class="gt_row gt_right gt_striped">0</td>
+      <td class="gt_row gt_right gt_striped">44.96429</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Charlton Ath</td>
+      <td class="gt_row gt_right">361</td>
+      <td class="gt_row gt_right">0</td>
+      <td class="gt_row gt_right">41.39286</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left gt_striped" style="color: black; font-weight: bold;">Crystal Palace</td>
+      <td class="gt_row gt_right gt_striped">472</td>
+      <td class="gt_row gt_right gt_striped">0</td>
+      <td class="gt_row gt_right gt_striped">37.22078</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">QPR</td>
+      <td class="gt_row gt_right">308</td>
+      <td class="gt_row gt_right">0</td>
+      <td class="gt_row gt_right">35.00000</td>
+    </tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="4">Source: FB Ref | By Blake Aerni</td>
+    </tr>
+  </tfoot>
+  
+</table></div>
+<p>Chelsea take the number one spot, and the Blues are deemed the best team in London.</p>
+<p>Now this isn’t 100% final and nobody can question it. I mean, I assigned rough number values to achievements that different people value would give different merit. Ultimately there is no single way to know for a fact who is the best club in London, but to me, this was the best way.</p>
+<p>It wasn’t only the fact that they were close on total points, but Chelsea have won at the highest stages in the Premier League era. I can comfortably say that the Blues are the best club in London now and if people want to disagree, then I will show them the numbers.</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
